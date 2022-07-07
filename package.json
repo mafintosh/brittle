@@ -37,6 +37,7 @@
     "tap-mocha-reporter": "^5.0.1",
     "tap-parser": "^10.1.0",
     "tap-yaml": "^1.0.0",
+    "test": "^3.0.1",
     "tmatch": "^5.0.0",
     "unix-path-resolve": "^1.0.2",
     "why-is-node-running": "^2.2.1"
