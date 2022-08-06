@@ -123,7 +123,7 @@ class Runner {
   }
 
   comment (...message) {
-    if (this.isEnded) throw new Error('Can\'t comment after end')
+    if (this.isEnded || this.isDone) throw new Error('Can\'t comment after end')
     this.log('#', ...message)
   }
 
