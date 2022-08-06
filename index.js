@@ -604,7 +604,7 @@ function configure ({ timeout = DEFAULT_TIMEOUT, bail = false, solo = false } = 
   const runner = getRunner()
 
   if (runner.tests.count > 0 || runner.assertions.count > 0) {
-    throw new Error('Configure before running any tests')
+    throw new Error('configuration must happen prior to registering any tests')
   }
 
   runner.timeout = DEFAULT_TIMEOUT
