@@ -46,7 +46,8 @@ function executeCode (script, opts = {}) {
 function standardizeTap (stdout) {
   return stdout
     .replace(/#.+\n/g, '') // strip comments
-    .replace(/\n[^\n]*node:internal[^\n]*\n/, '\n') // strip internal node stacks
+    .replace(/\n[^\n]*node:internal[^\n]*\n/g, '\n') // strip internal node stacks
+    .replace(/\n[^\n]*(\[eval\])[^\n]*\n/g, '\n') // strip internal node stacks
     .split('\n')
     .map(n => n.trim())
     .filter(n => n)
