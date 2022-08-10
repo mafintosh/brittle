@@ -1,7 +1,7 @@
 const path = require('path')
 const { spawn } = require('child_process')
 
-const pkg = path.resolve(path.join('..', '..', 'index.js'))
+const pkg = path.resolve(path.join('..', 'index.js'))
 
 module.exports = { spawner }
 
