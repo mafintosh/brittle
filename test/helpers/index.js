@@ -14,7 +14,6 @@ async function tester (t, name, func, expected) {
 
   t.is(stderr, '') // + temp
   t.is(stdout, standardizeTap(expected.trim()))
-  t.pass()
 }
 
 async function spawner (t, func, expected) {
@@ -25,7 +24,6 @@ async function spawner (t, func, expected) {
 
   t.is(stderr, '') // + temp
   t.is(stdout, standardizeTap(expected.trim()))
-  t.pass()
 }
 
 function executeCode (script, opts = {}) {
