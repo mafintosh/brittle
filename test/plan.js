@@ -4,7 +4,8 @@ const { tester, spawner } = require('./helpers')
 test(async function (t) {
   await tester(t, 'plan must be positive',
     function (t) {
-      // t.fail('not correct')
+      // t.fail('random')
+      // throw new Error('random')
       t.plan(-1)
     },
     `
