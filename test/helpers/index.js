@@ -1,6 +1,5 @@
 const path = require('path')
 const child_process = require('child_process')
-const tapParser = require('tap-parser')
 
 const pkg = JSON.stringify(path.resolve(path.join('..', 'index.js')))
 
@@ -36,7 +35,7 @@ function executeCode (script, opts = {}) {
       }
 
       if (true) {
-        stdout = parseTap(stdout)
+        stdout = standardizeTap(stdout)
       }
 
       resolve({ stdout, stderr })
@@ -44,14 +43,14 @@ function executeCode (script, opts = {}) {
   })
 }
 
-function parseTap (stdout) {
-  let parsed = tapParser.parse(stdout)
-  return JSON.parse(JSON.stringify(parsed, replacer, '  '))
-
-  function replacer (k, v) {
-    if (!Array.isArray(v)) return v
-    return v.filter(item => !Array.isArray(item) || item[0] !== 'comment')
-  }
+function standardizeTap (stdout) {
+  return stdout
+    .replace(/#.+\n/g, '') // strip comments
+    .replace(/\n[^\n]*node:internal[^\n]*\n/, '\n') // strip internal node stacks
+    .split('\n')
+    .map(n => n.trimRight())
+    .filter(n => n)
+    .join('\n')
 }
 
 function functionToString (func, opts = {}) {
