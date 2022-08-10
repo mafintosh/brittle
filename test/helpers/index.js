@@ -11,9 +11,12 @@ async function tester (t, name, func, expected) {
 
   const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
   const { stdout, stderr } = await executeCode(script)
+  const tapout = standardizeTap(stdout)
 
   t.is(stderr, '') // + temp
-  t.is(stdout, standardizeTap(expected.trim()))
+  t.is(tapout, standardizeTap(expected))
+
+  return { stdout, tapout, stderr }
 }
 
 async function spawner (t, func, expected) {
@@ -21,28 +24,23 @@ async function spawner (t, func, expected) {
 
   const script = `const test = require(${pkg})\n\n${func}`
   const { stdout, stderr } = await executeCode(script)
+  const tapout = standardizeTap(stdout)
 
   t.is(stderr, '') // + temp
-  t.is(stdout, standardizeTap(expected.trim()))
+  t.is(tapout, standardizeTap(expected))
+
+  return { stdout, tapout, stderr }
 }
 
-function executeCode (script, opts = {}) {
+function executeCode (script) {
   return new Promise((resolve, reject) => {
     const args = ['-e', script]
     const opts = { timeout: 30000 }
     const child = child_process.execFile(process.execPath, args, opts, callback)
 
     function callback (error, stdout, stderr) {
-      if (error) {
-        reject(error)
-        return
-      }
-
-      if (true) {
-        stdout = standardizeTap(stdout)
-      }
-
-      resolve({ stdout, stderr })
+      if (error) reject(error)
+      else resolve({ stdout, stderr })
     }
   })
 }
