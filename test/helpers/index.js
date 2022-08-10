@@ -36,7 +36,7 @@ function executeCode (script) {
   return new Promise((resolve, reject) => {
     const args = ['-e', script]
     const opts = { timeout: 30000 }
-    const child = child_process.execFile(process.execPath, args, opts, callback)
+    child_process.execFile(process.execPath, args, opts, callback)
 
     function callback (error, stdout, stderr) {
       if (error) reject(error)
