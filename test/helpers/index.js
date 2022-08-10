@@ -36,11 +36,16 @@ function executeCode (script) {
   return new Promise((resolve, reject) => {
     const args = ['-e', script]
     const opts = { timeout: 30000 }
-    child_process.execFile(process.execPath, args, opts, callback)
+    const child = child_process.execFile(process.execPath, args, opts, callback)
+
+    let exitCode // + should listen to 'close' or 'exit'? (note: 'close' is called after callback)
+    child.on('exit', function (code) {
+      exitCode = code
+    })
 
     function callback (error, stdout, stderr) {
-      if (error) reject(error)
-      else resolve({ stdout, stderr })
+      if (error) resolve({ exitCode, error })
+      else resolve({ exitCode, stdout, stderr })
     }
   })
 }
