@@ -1,7 +1,7 @@
 const path = require('path')
 const { spawn } = require('child_process')
 
-const pkg = path.resolve(path.join('../', 'index.js'))
+const pkg = path.resolve(path.join('..', '..', 'index.js'))
 
 module.exports = { spawner }
 
@@ -9,7 +9,7 @@ function spawner (func, args, opts) {
   return new Promise((resolve, reject) => {
     func = functionToString(func)
 
-    const script = `const test = require('${pkg}')\n\n${func}`
+    const script = `const test = require(${JSON.stringify(pkg)})\n\n${func}`
 
     // + timeout?
     const proc = spawn(process.execPath, ['-e', script/* , ...args */], { stdio: ['pipe', 'pipe', 'pipe']/* , ...opts */ })
