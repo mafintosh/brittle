@@ -1,5 +1,5 @@
 const test = require('../')
-const { spawner, tester } = require('./helpers')
+const { tester, spawner } = require('./helpers')
 
 test(async function (t) {
   await tester(t, 'plan must be positive',
