@@ -1,5 +1,5 @@
 const path = require('path')
-const { spawn } = require('child_process')
+const child_process = require('child_process')
 const tapParser = require('tap-parser')
 
 const pkg = JSON.stringify(path.resolve(path.join('..', 'index.js')))
@@ -25,50 +25,31 @@ async function spawner (func) {
 
 function executeCode (script, opts = {}) {
   return new Promise((resolve, reject) => {
-    // + timeout?
-    const proc = spawn(process.execPath, ['-e', script/* , ...args */], { stdio: ['pipe', 'pipe', 'pipe']/* , ...opts */ })
+    const args = ['-e', script]
+    const opts = { timeout: 30000 }
+    const child = child_process.execFile(process.execPath, args, opts, callback)
 
-    const stdout = []
-    const stderr = []
-
-    proc.on('close', function (code) {
-      let out = cleanStd(stdout)
-      let err = cleanStd(stderr)
+    function callback (error, stdout, stderr) {
+      if (error) {
+        reject(error)
+        return
+      }
 
       if (true) {
-        out = parseTap(out)
+        stdout = parseTap(stdout)
       }
 
       resolve({
-        stdout: out,
-        stderr: err
+        stdout,
+        stderr
       })
-    })
-
-    proc.on('error', function (error) {
-      reject(error)
-    })
-
-    proc.stdout.setEncoding('utf-8')
-    proc.stderr.setEncoding('utf-8')
-    proc.stdout.on('data', (chunk) => stdout.push(chunk))
-    proc.stderr.on('data', (chunk) => stderr.push(chunk))
-    proc.stdout.on('end', (chunk) => stdout.push(chunk))
-    proc.stderr.on('end', (chunk) => stderr.push(chunk))
+    }
   })
 }
 
-function cleanStd (std) {
-  if (!std.length || std[0] === undefined) {
-    return undefined
-  }
-  return std.join('')
-}
-
 function parseTap (stdout) {
-  const parsed = tapParser.parse(stdout)
-  return parsed
-  // return JSON.stringify(parsed, replacer, '  ')
+  let parsed = tapParser.parse(stdout)
+  return JSON.parse(JSON.stringify(parsed, replacer, '  '))
 
   function replacer (k, v) {
     if (!Array.isArray(v)) return v
