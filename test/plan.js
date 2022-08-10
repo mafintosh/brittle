@@ -30,7 +30,8 @@ test(async function (t) {
     # time = 7.180862ms
 
     # not ok
-    `
+    `,
+    { exitCode: 0 }
   )
 })
 
@@ -82,6 +83,7 @@ test(async function (t) {
     # time = 8.126944ms
 
     # not ok
-    `
+    `,
+    { exitCode: 0 }
   )
 })
