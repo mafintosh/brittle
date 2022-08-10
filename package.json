@@ -19,7 +19,6 @@
     "tmatch": "^5.0.0"
   },
   "devDependencies": {
-    "standard": "^17.0.0",
-    "tap-parser": "^11.0.1"
+    "standard": "^17.0.0"
   }
 }
