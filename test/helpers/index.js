@@ -39,10 +39,7 @@ function executeCode (script, opts = {}) {
         stdout = parseTap(stdout)
       }
 
-      resolve({
-        stdout,
-        stderr
-      })
+      resolve({ stdout, stderr })
     }
   })
 }
