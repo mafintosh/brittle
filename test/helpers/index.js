@@ -5,11 +5,22 @@ const pkg = JSON.stringify(path.join(__dirname, '..', '..', 'index.js'))
 
 module.exports = { tester, spawner, standardizeTap }
 
-async function tester (t, name, func, expected) {
+async function tester (t, name, func, expected, expectedMore = {}) {
   name = JSON.stringify(name)
   func = functionToString(func, { raw: true })
 
   const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
+  return executeTap(t, script, expected, expectedMore)
+}
+
+async function spawner (t, func, expected, expectedMore = {}) {
+  func = functionToString(func)
+
+  const script = `const test = require(${pkg})\n\n${func}`
+  return executeTap(t, script, expected, expectedMore)
+}
+
+async function executeTap (t, script, expected, expectedMore = {}) {
   const { exitCode, error, stdout, stderr } = await executeCode(script)
 
   if (error) {
@@ -25,20 +36,11 @@ async function tester (t, name, func, expected) {
   t.is(stderr, '') // + temp
   t.is(tapout, standardizeTap(expected))
 
+  if (expectedMore.exitCode !== undefined) {
+    t.is(exitCode, expectedMore.exitCode)
+  }
+
   return { exitCode, stdout, tapout, stderr }
-}
-
-async function spawner (t, func, expected) {
-  func = functionToString(func)
-
-  const script = `const test = require(${pkg})\n\n${func}`
-  const { stdout, stderr } = await executeCode(script)
-  const tapout = standardizeTap(stdout)
-
-  t.is(stderr, '') // + temp
-  t.is(tapout, standardizeTap(expected))
-
-  return { stdout, tapout, stderr }
 }
 
 function executeCode (script) {
