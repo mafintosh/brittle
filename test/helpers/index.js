@@ -1,7 +1,7 @@
 const path = require('path')
 const child_process = require('child_process')
 
-const pkg = JSON.stringify(path.resolve(path.join('..', 'index.js')))
+const pkg = JSON.stringify(path.join(__dirname, '..', '..', 'index.js'))
 
 module.exports = { tester, spawner, standardizeTap }
 
