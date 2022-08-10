@@ -3,7 +3,7 @@ const child_process = require('child_process')
 
 const pkg = JSON.stringify(path.resolve(path.join('..', 'index.js')))
 
-module.exports = { spawner, tester }
+module.exports = { spawner, tester, standardizeTap }
 
 async function tester (name, func) {
   name = JSON.stringify(name)
@@ -48,7 +48,7 @@ function standardizeTap (stdout) {
     .replace(/#.+\n/g, '') // strip comments
     .replace(/\n[^\n]*node:internal[^\n]*\n/, '\n') // strip internal node stacks
     .split('\n')
-    .map(n => n.trimRight())
+    .map(n => n.trim())
     .filter(n => n)
     .join('\n')
 }
