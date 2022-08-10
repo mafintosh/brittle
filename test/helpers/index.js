@@ -23,6 +23,10 @@ async function spawner (t, func, expected, expectedMore = {}) {
 async function executeTap (t, script, expected, expectedMore = {}) {
   const { exitCode, error, stdout, stderr } = await executeCode(script)
 
+  if (expectedMore.exitCode !== undefined) {
+    t.is(exitCode, expectedMore.exitCode, 'exitCode is the expected')
+  }
+
   if (error) {
     throw error // + not sure about this
   }
@@ -32,13 +36,7 @@ async function executeTap (t, script, expected, expectedMore = {}) {
   }
 
   const tapout = standardizeTap(stdout)
-
-  t.is(stderr, '') // + temp
-  t.is(tapout, standardizeTap(expected))
-
-  if (expectedMore.exitCode !== undefined) {
-    t.is(exitCode, expectedMore.exitCode)
-  }
+  t.is(tapout, standardizeTap(expected), 'TAP output matches the expected output')
 
   return { exitCode, stdout, tapout, stderr }
 }
