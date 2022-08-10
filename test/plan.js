@@ -1,5 +1,5 @@
 const test = require('../')
-const { spawner, tester } = require('./helpers')
+const { spawner, tester, standardizeTap } = require('./helpers')
 
 test(async function (t) {
   const std = await spawner(function () {
@@ -12,10 +12,35 @@ test(async function (t) {
     })
   })
 
-  console.log(std.stdout)
+  t.is(std.stderr, '')
+  t.is(std.stdout, standardizeTap(`
+  TAP version 13
+    not ok 1 - plan takes a positive whole number only
+      ---
+      operator: plan
+      at:
+        line: 4
+        column: 9
+        file: /[eval]
+      stack: |
+        [eval]:4:9
+      ...
+  not ok 1 - plan must be integer
+      not ok 1 - plan takes a positive whole number only
+        ---
+        operator: plan
+        at:
+          line: 8
+          column: 9
+          file: /[eval]
+        stack: |
+          [eval]:8:9
+          processTicksAndRejections (node:internal/process/task_queues:96:5)
+        ...
+  not ok 2 - plan must be positive
+  1..2
+  `))
 
-  // t.ok(std.stdout.indexOf('not ok 1 - plan takes a positive whole number only') > -1)
-  // t.is(std.stderr, undefined)
   t.pass()
 })
 
@@ -24,9 +49,22 @@ test(async function (t) {
     t.plan(-1)
   })
 
-  console.log(std.stdout)
+  t.is(std.stderr, '')
+  t.is(std.stdout, standardizeTap(`
+  TAP version 13
+    not ok 1 - plan takes a positive whole number only
+      ---
+      operator: plan
+      at:
+        line: 4
+        column: 7
+        file: /[eval]
+      stack: |
+        [eval]:4:7
+      ...
+  not ok 1 - plan must be positive
+  1..1
+  `))
 
-  // t.ok(std.stdout.indexOf('not ok 1 - plan takes a positive whole number only') > -1)
-  // t.is(std.stderr, undefined)
   t.pass()
 })
