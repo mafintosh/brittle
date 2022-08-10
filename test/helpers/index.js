@@ -3,7 +3,7 @@ const child_process = require('child_process')
 
 const pkg = JSON.stringify(path.resolve(path.join('..', 'index.js')))
 
-module.exports = { spawner, tester, standardizeTap }
+module.exports = { tester, spawner, standardizeTap }
 
 async function tester (t, name, func, expected) {
   name = JSON.stringify(name)
