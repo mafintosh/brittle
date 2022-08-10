@@ -10,13 +10,22 @@ async function tester (t, name, func, expected) {
   func = functionToString(func, { raw: true })
 
   const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
-  const { stdout, stderr } = await executeCode(script)
+  const { exitCode, error, stdout, stderr } = await executeCode(script)
+
+  if (error) {
+    throw error
+  }
+
+  if (stderr) {
+    throw stderr
+  }
+
   const tapout = standardizeTap(stdout)
 
   t.is(stderr, '') // + temp
   t.is(tapout, standardizeTap(expected))
 
-  return { stdout, tapout, stderr }
+  return { exitCode, stdout, tapout, stderr }
 }
 
 async function spawner (t, func, expected) {
