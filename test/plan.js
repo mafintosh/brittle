@@ -4,6 +4,7 @@ const { tester, spawner } = require('./helpers')
 test(async function (t) {
   await tester(t, 'plan must be positive',
     function (t) {
+      // t.fail('not correct')
       t.plan(-1)
     },
     `
@@ -14,11 +15,11 @@ test(async function (t) {
           ---
           operator: plan
           at: 
-            line: 4
+            line: 5
             column: 9
             file: /[eval]
           stack: |
-            [eval]:4:9
+            [eval]:5:9
             processTicksAndRejections (node:internal/process/task_queues:96:5)
           ...
     not ok 1 - plan must be positive # time = 4.043233ms
