@@ -1,5 +1,5 @@
 const test = require('../')
-const { spawner } = require('./helper.js')
+const { spawner } = require('./helpers')
 
 test(async function (t) {
   const std = await spawner(() => {
