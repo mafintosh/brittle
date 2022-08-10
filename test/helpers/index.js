@@ -5,21 +5,27 @@ const pkg = JSON.stringify(path.resolve(path.join('..', 'index.js')))
 
 module.exports = { spawner, tester, standardizeTap }
 
-async function tester (name, func) {
+async function tester (t, name, func, expected) {
   name = JSON.stringify(name)
   func = functionToString(func, { raw: true })
 
   const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
+  const { stdout, stderr } = await executeCode(script)
 
-  return executeCode(script)
+  t.is(stderr, '') // + temp
+  t.is(stdout, standardizeTap(expected.trim()))
+  t.pass()
 }
 
-async function spawner (func) {
+async function spawner (t, func, expected) {
   func = functionToString(func)
 
   const script = `const test = require(${pkg})\n\n${func}`
+  const { stdout, stderr } = await executeCode(script)
 
-  return executeCode(script)
+  t.is(stderr, '') // + temp
+  t.is(stdout, standardizeTap(expected.trim()))
+  t.pass()
 }
 
 function executeCode (script, opts = {}) {
