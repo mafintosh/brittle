@@ -24,11 +24,11 @@ async function executeTap (t, script, expected, expectedMore = {}) {
   const { exitCode, error, stdout, stderr } = await executeCode(script)
 
   if (error) {
-    throw error
+    throw error // + not sure about this
   }
 
   if (stderr) {
-    throw stderr
+    throw stderr // + not sure about this
   }
 
   const tapout = standardizeTap(stdout)
