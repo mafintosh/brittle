@@ -1,16 +1,30 @@
 const path = require('path')
 const { spawn } = require('child_process')
+const tapParser = require('tap-parser')
 
-const pkg = path.resolve(path.join('..', 'index.js'))
+const pkg = JSON.stringify(path.resolve(path.join('..', 'index.js')))
 
-module.exports = { spawner }
+module.exports = { spawner, tester }
 
-function spawner (func, args, opts) {
+async function tester (name, func) {
+  name = JSON.stringify(name)
+  func = functionToString(func, { raw: true })
+
+  const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
+
+  return executeCode(script)
+}
+
+async function spawner (func) {
+  func = functionToString(func)
+
+  const script = `const test = require(${pkg})\n\n${func}`
+
+  return executeCode(script)
+}
+
+function executeCode (script, opts = {}) {
   return new Promise((resolve, reject) => {
-    func = functionToString(func)
-
-    const script = `const test = require(${JSON.stringify(pkg)})\n\n${func}`
-
     // + timeout?
     const proc = spawn(process.execPath, ['-e', script/* , ...args */], { stdio: ['pipe', 'pipe', 'pipe']/* , ...opts */ })
 
@@ -18,7 +32,17 @@ function spawner (func, args, opts) {
     const stderr = []
 
     proc.on('close', function (code) {
-      resolve({ stdout: cleanStd(stdout), stderr: cleanStd(stderr) })
+      let out = cleanStd(stdout)
+      let err = cleanStd(stderr)
+
+      if (true) {
+        out = parseTap(out)
+      }
+
+      resolve({
+        stdout: out,
+        stderr: err
+      })
     })
 
     proc.on('error', function (error) {
@@ -41,15 +65,28 @@ function cleanStd (std) {
   return std.join('')
 }
 
-function functionToString (func) {
+function parseTap (stdout) {
+  const parsed = tapParser.parse(stdout)
+  return parsed
+  // return JSON.stringify(parsed, replacer, '  ')
+
+  function replacer (k, v) {
+    if (!Array.isArray(v)) return v
+    return v.filter(item => !Array.isArray(item) || item[0] !== 'comment')
+  }
+}
+
+function functionToString (func, opts = {}) {
   func = func.toString()
 
-  // very naively done but works for now
-  if (func.indexOf('function () {') === 0) func = func.replace('function () {', '')
-  else if (func.indexOf('() => {') === 0) func = func.replace('() => {', '')
-  else throw new Error('Function for spawning not valid')
+  if (!opts.raw) {
+    // very naively done but works for now
+    if (func.indexOf('function () {') === 0) func = func.replace('function () {', '')
+    else if (func.indexOf('() => {') === 0) func = func.replace('() => {', '')
+    else throw new Error('Function for spawning not valid')
 
-  func = func.slice(0, -1) // removes "}" from the end
+    func = func.slice(0, -1) // removes "}" from the end
+  }
 
   // + there are some remaining spaces
   return func.trim()
