@@ -3,7 +3,7 @@ const { tester, spawner } = require('../helpers')
 
 test(async function (t) {
   await tester(t, 'assert after end',
-    async function (t) {
+    function (t) {
       t.pass()
       t.end()
       t.pass()
