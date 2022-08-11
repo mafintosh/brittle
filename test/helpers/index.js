@@ -8,7 +8,7 @@ module.exports = { tester, spawner, standardizeTap }
 
 async function tester (name, func, expected, expectedMore = {}) {
   name = JSON.stringify(name)
-  func = functionToString(func, { raw: true })
+  func = functionToString(func)
 
   const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
   print('tester', 'yellow', script)
@@ -16,7 +16,7 @@ async function tester (name, func, expected, expectedMore = {}) {
 }
 
 async function spawner (func, expected, expectedMore = {}) {
-  func = functionToString(func, { raw: true })
+  func = functionToString(func)
 
   const script = `const test = require(${pkg})\n\n;(${func})()`
   print('spawner', 'yellow', script)
