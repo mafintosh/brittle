@@ -53,7 +53,7 @@ async function executeTap (script, expected, expectedMore = {}) {
     for (const err of errors) {
       console.error(chalk.red.bold('Error:'), err.error.message)
 
-      if ('actual' in err || 'expected' in err) {
+      if (Object.hasOwn(err, 'actual') || Object.hasOwn(err, 'expected')) {
         console.error(chalk.red('[actual]'), err.actual)
         console.error(chalk.red('[expected]'), err.expected)
       }
