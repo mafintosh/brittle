@@ -26,7 +26,7 @@ await tester('assert after end',
 )
 
 await spawner(
-  function () {
+  function (test) {
     const t = test('assert after end')
     t.pass()
     t.end()

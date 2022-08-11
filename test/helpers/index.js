@@ -1,24 +1,22 @@
 const path = require('path')
-const child_process = require('child_process')
+const { spawn } = require('child_process')
 const chalk = require('chalk')
 
+const PRINT_ENABLED = false
 const pkg = JSON.stringify(path.join(__dirname, '..', '..', 'index.js'))
 
 module.exports = { tester, spawner, standardizeTap }
 
-async function tester (name, func, expected, expectedMore = {}) {
+async function tester (name, fn, expected, expectedMore = {}) {
   name = JSON.stringify(name)
-  func = functionToString(func)
 
-  const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
+  const script = `const test = require(${pkg})\n\nconst _fn = (${fn.toString()})\n\ntest(${name}, _fn)`
   print('tester', 'yellow', script)
   return executeTap(script, expected, expectedMore)
 }
 
-async function spawner (func, expected, expectedMore = {}) {
-  func = functionToString(func)
-
-  const script = `const test = require(${pkg})\n\n;(${func})()`
+async function spawner (fn, expected, expectedMore = {}) {
+  const script = `const test = require(${pkg})\n\nconst _fn = (${fn.toString()})\n\n_fn(test)`
   print('spawner', 'yellow', script)
   return executeTap(script, expected, expectedMore)
 }
@@ -35,7 +33,7 @@ async function executeTap (script, expected, expectedMore = {}) {
 
   if (error) errors.push({ error })
   if (stderr) errors.push({ error: new Error(stderr) })
-  
+
   if (!error && !stderr) {
     tapout = standardizeTap(stdout)
     tapexp = standardizeTap(expected)
@@ -55,7 +53,7 @@ async function executeTap (script, expected, expectedMore = {}) {
     for (const err of errors) {
       console.error(chalk.red.bold('Error:'), err.error.message)
 
-      if (err.hasOwnProperty('actual') || err.hasOwnProperty('expected')) {
+      if ('actual' in err || 'expected' in err) {
         console.error(chalk.red('[actual]'), err.actual)
         console.error(chalk.red('[expected]'), err.expected)
       }
@@ -69,7 +67,7 @@ function executeCode (script) {
   return new Promise((resolve, reject) => {
     const args = ['-e', script]
     const opts = { timeout: 30000 }
-    const child = child_process.spawn(process.execPath, args, opts)
+    const child = spawn(process.execPath, args, opts)
 
     let exitCode
     let stdout = ''
@@ -89,8 +87,12 @@ function executeCode (script) {
 
     child.stdout.setEncoding('utf-8')
     child.stderr.setEncoding('utf-8')
-    child.stdout.on('data', (chunk) => stdout += chunk)
-    child.stderr.on('data', (chunk) => stderr += chunk)
+    child.stdout.on('data', function (chunk) {
+      stdout += chunk
+    })
+    child.stderr.on('data', function (chunk) {
+      stderr += chunk
+    })
   })
 }
 
@@ -105,13 +107,8 @@ function standardizeTap (stdout) {
     .join('\n')
 }
 
-function functionToString (func) {
-  // + there are still some remaining spaces
-  return func.toString().trim()
-}
-
 function print (name, color, str) {
-  return
+  if (!PRINT_ENABLED) return
   console.log(chalk[color]('[' + name + ']'))
   console.log(str)
   console.log(chalk[color]('[/' + name + ']'))
