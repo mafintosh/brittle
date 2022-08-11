@@ -6,28 +6,30 @@ const pkg = JSON.stringify(path.join(__dirname, '..', '..', 'index.js'))
 
 module.exports = { tester, spawner, standardizeTap }
 
-async function tester (t, name, func, expected, expectedMore = {}) {
+async function tester (name, func, expected, expectedMore = {}) {
   name = JSON.stringify(name)
   func = functionToString(func, { raw: true })
 
   const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
   print('tester', 'yellow', script)
-  return executeTap(t, script, expected, expectedMore)
+  return executeTap(script, expected, expectedMore)
 }
 
-async function spawner (t, func, expected, expectedMore = {}) {
+async function spawner (func, expected, expectedMore = {}) {
   func = functionToString(func, { raw: true })
 
   const script = `const test = require(${pkg})\n\n;(${func})()`
   print('spawner', 'yellow', script)
-  return executeTap(t, script, expected, expectedMore)
+  return executeTap(script, expected, expectedMore)
 }
 
-async function executeTap (t, script, expected, expectedMore = {}) {
+async function executeTap (script, expected, expectedMore = {}) {
   const { exitCode, error, stdout, stderr } = await executeCode(script)
 
-  if (expectedMore.exitCode !== undefined) {
-    t.is(exitCode, expectedMore.exitCode, 'exitCode is the expected')
+  const errors = []
+
+  if (expectedMore.exitCode !== undefined && exitCode !== expectedMore.exitCode) {
+    errors.push({ error: new Error('exitCode is not the expected'), actual: exitCode, expected: expectedMore.exitCode })
   }
 
   if (error) throw error
@@ -35,13 +37,25 @@ async function executeTap (t, script, expected, expectedMore = {}) {
 
   const tapout = standardizeTap(stdout)
   const tapexp = standardizeTap(expected)
-  t.is(tapout, tapexp, 'TAP output matches the expected output')
+  if (tapout !== tapexp) {
+    errors.push({ error: new Error('TAP output matches the expected output'), actual: tapout, expected: tapexp })
+  }
 
   print('stdout', 'green', stdout)
   print('tapout', 'magenta', tapout)
   print('tapexp', 'cyan', tapexp)
 
-  return { exitCode, stdout, tapout, tapexp, stderr }
+  if (errors.length) {
+    for (const err of errors) {
+      console.error(chalk.red('error'), err.error.message)
+      console.error(chalk.red('actual'))
+      console.error(err.actual)
+      console.error(chalk.red('expected'))
+      console.error(err.expected)
+    }
+  }
+
+  return { errors, exitCode, stdout, tapout, tapexp, stderr }
 }
 
 function executeCode (script) {
