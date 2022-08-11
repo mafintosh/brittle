@@ -73,25 +73,25 @@ function executeCode (script) {
     const child = child_process.spawn(process.execPath, args, opts)
 
     let exitCode
-    const stdout = []
-    const stderr = []
+    let stdout = ''
+    let stderr = ''
 
     child.on('exit', function (code) {
       exitCode = code
     })
 
     child.on('close', function (code) {
-      resolve({ exitCode, stdout: cleanStd(stdout), stderr: cleanStd(stderr) })
+      resolve({ exitCode, stdout, stderr })
     })
 
     child.on('error', function (error) {
-      resolve({ exitCode, error, stdout: cleanStd(stdout), stderr: cleanStd(stderr) })
+      resolve({ exitCode, error, stdout, stderr })
     })
 
     child.stdout.setEncoding('utf-8')
     child.stderr.setEncoding('utf-8')
-    child.stdout.on('data', (chunk) => stdout.push(chunk))
-    child.stderr.on('data', (chunk) => stderr.push(chunk))
+    child.stdout.on('data', (chunk) => stdout += chunk)
+    child.stderr.on('data', (chunk) => stderr += chunk)
   })
 }
 
@@ -104,13 +104,6 @@ function standardizeTap (stdout) {
     .map(n => n.trim())
     .filter(n => n)
     .join('\n')
-}
-
-function cleanStd (std) {
-  if (!std || !std.length || std[0] === undefined) {
-    return ''
-  }
-  return std.join('')
 }
 
 function functionToString (func) {
