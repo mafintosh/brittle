@@ -92,8 +92,6 @@ function executeCode (script) {
     child.stderr.setEncoding('utf-8')
     child.stdout.on('data', (chunk) => stdout.push(chunk))
     child.stderr.on('data', (chunk) => stderr.push(chunk))
-    child.stdout.on('end', (chunk) => stdout.push(chunk))
-    child.stderr.on('end', (chunk) => stderr.push(chunk))
   })
 }
 
