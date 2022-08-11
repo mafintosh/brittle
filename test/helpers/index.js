@@ -53,7 +53,7 @@ async function executeTap (script, expected, expectedMore = {}) {
     process.exitCode = 1
 
     for (const err of errors) {
-      console.error(chalk.white.bgRed.bold('Error:'), err.error.message)
+      console.error(chalk.red.bold('Error:'), err.error.message)
 
       if (err.hasOwnProperty('actual') || err.hasOwnProperty('expected')) {
         console.error(chalk.red('[actual]'), err.actual)
