@@ -46,6 +46,8 @@ async function executeTap (script, expected, expectedMore = {}) {
   print('tapexp', 'cyan', tapexp)
 
   if (errors.length) {
+    process.exitCode = 1
+
     for (const err of errors) {
       console.error(chalk.red('error'), err.error.message)
       console.error(chalk.red('actual'))
