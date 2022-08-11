@@ -21,6 +21,7 @@ async function spawner (t, func, expected, expectedMore = {}) {
 }
 
 async function executeTap (t, script, expected, expectedMore = {}) {
+  print('script', script)
   const { exitCode, error, stdout, stderr } = await executeCode(script)
 
   if (expectedMore.exitCode !== undefined) {
@@ -38,6 +39,10 @@ async function executeTap (t, script, expected, expectedMore = {}) {
   const tapout = standardizeTap(stdout)
   const tapexp = standardizeTap(expected)
   t.is(tapout, tapexp, 'TAP output matches the expected output')
+
+  // print('stdout', stdout)
+  print('tapout', tapout)
+  print('tapexp', tapexp)
 
   return { exitCode, stdout, tapout, tapexp, stderr }
 }
@@ -85,4 +90,10 @@ function functionToString (func, opts = {}) {
 
   // + there are some remaining spaces
   return func.trim()
+}
+
+function print (name, str) {
+  console.log('[' + name + ']')
+  console.log(str)
+  console.log('[/' + name + ']')
 }
