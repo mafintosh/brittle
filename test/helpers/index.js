@@ -32,26 +32,37 @@ async function executeTap (script, expected, expectedMore = {}) {
     errors.push({ error: new Error('exitCode is not the expected'), actual: exitCode, expected: expectedMore.exitCode })
   }
 
-  if (error) throw error
-  if (stderr) throw new Error(stderr)
-
-  const tapout = standardizeTap(stdout)
-  const tapexp = standardizeTap(expected)
-  if (tapout !== tapexp) {
-    errors.push({ error: new Error('TAP output matches the expected output'), actual: tapout, expected: tapexp })
+  if (error) {
+    errors.push({ error })
+  } else if (stderr) {
+    errors.push({ error: new Error(stderr) })
   }
 
-  print('stdout', 'green', stdout)
-  print('tapout', 'magenta', tapout)
-  print('tapexp', 'cyan', tapexp)
+  let tapout
+  let tapexp
+  if (!errors.length) {
+    tapout = standardizeTap(stdout)
+    tapexp = standardizeTap(expected)
+    if (tapout !== tapexp) {
+      errors.push({ error: new Error('TAP output matches the expected output'), actual: tapout, expected: tapexp })
+    }
+
+    print('stdout', 'green', stdout)
+    print('tapout', 'magenta', tapout)
+    print('tapexp', 'cyan', tapexp)
+  }
 
   if (errors.length) {
     process.exitCode = 1
 
-    for (const err of errors) {
-      console.error(chalk.white.bgRed.bold(err.error.message + ' ->'))
-      console.error(chalk.red('[actual]'), err.actual)
-      console.error(chalk.red('[expected]'), err.expected)
+    for (let i = 0; i < errors.length; i++) {
+      const err = errors[i]
+      console.error(chalk.white.bgRed.bold('Error:'))
+      if (err.hasOwnProperty('actual') || err.hasOwnProperty('expected')) {
+        console.error(chalk.red('[actual]'), err.actual)
+        console.error(chalk.red('[expected]'), err.expected)
+      }
+      console.error(chalk.red('[stack]'), err.error.stack)
     }
   }
 
