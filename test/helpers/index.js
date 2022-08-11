@@ -90,6 +90,7 @@ function functionToString (func, opts = {}) {
 }
 
 function print (name, color, str) {
+  return
   console.log(chalk[color]('[' + name + ']'))
   console.log(str)
   console.log(chalk[color]('[/' + name + ']'))
