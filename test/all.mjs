@@ -16,3 +16,9 @@ for (const file of files) {
   console.log(chalk.green.bold('Running'), filepath)
   await import(filepath)
 }
+
+if (process.exitCode) {
+  console.log(chalk.red.bold('Tests failed'))
+} else {
+  console.log(chalk.green.bold('Tests passed'))
+}
