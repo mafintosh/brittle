@@ -11,6 +11,7 @@ async function tester (t, name, func, expected, expectedMore = {}) {
   func = functionToString(func, { raw: true })
 
   const script = `const test = require(${pkg})\n\ntest(${name}, ${func})`
+  print('tester', 'yellow', script)
   return executeTap(t, script, expected, expectedMore)
 }
 
@@ -18,11 +19,11 @@ async function spawner (t, func, expected, expectedMore = {}) {
   func = functionToString(func, { raw: true })
 
   const script = `const test = require(${pkg})\n\n;(${func})()`
+  print('spawner', 'yellow', script)
   return executeTap(t, script, expected, expectedMore)
 }
 
 async function executeTap (t, script, expected, expectedMore = {}) {
-  print('script', 'yellow', script)
   const { exitCode, error, stdout, stderr } = await executeCode(script)
 
   if (expectedMore.exitCode !== undefined) {
