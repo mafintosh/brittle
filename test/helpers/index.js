@@ -36,9 +36,10 @@ async function executeTap (t, script, expected, expectedMore = {}) {
   }
 
   const tapout = standardizeTap(stdout)
-  t.is(tapout, standardizeTap(expected), 'TAP output matches the expected output')
+  const tapexp = standardizeTap(expected)
+  t.is(tapout, tapexp, 'TAP output matches the expected output')
 
-  return { exitCode, stdout, tapout, stderr }
+  return { exitCode, stdout, tapout, tapexp, stderr }
 }
 
 function executeCode (script) {
