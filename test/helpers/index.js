@@ -48,8 +48,7 @@ async function executeTap (script, expected, expectedMore = {}) {
   if (errors.length) {
     process.exitCode = 1
 
-    for (let i = 0; i < errors.length; i++) {
-      const err = errors[i]
+    for (const err of errors) {
       console.error(chalk.white.bgRed.bold(err.error.message + ' ->'))
       console.error(chalk.red('[actual]'), err.actual)
       console.error(chalk.red('[expected]'), err.expected)
