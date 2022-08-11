@@ -30,13 +30,8 @@ async function executeTap (t, script, expected, expectedMore = {}) {
     t.is(exitCode, expectedMore.exitCode, 'exitCode is the expected')
   }
 
-  if (error) {
-    throw error // + not sure about this
-  }
-
-  if (stderr) {
-    throw stderr // + not sure about this
-  }
+  if (error) throw error
+  if (stderr) throw new Error(stderr)
 
   const tapout = standardizeTap(stdout)
   const tapexp = standardizeTap(expected)
