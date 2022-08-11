@@ -52,6 +52,7 @@ async function executeTap (script, expected, expectedMore = {}) {
       console.error(err.actual)
       console.error(chalk.red('expected'))
       console.error(err.expected)
+      console.error()
     }
   }
 
