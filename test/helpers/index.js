@@ -112,7 +112,7 @@ function standardizeTap (stdout) {
 }
 
 function cleanStd (std) {
-  if (!std.length || std[0] === undefined) {
+  if (!std || !std.length || std[0] === undefined) {
     return ''
   }
   return std.join('')
