@@ -1,5 +1,6 @@
 const path = require('path')
 const child_process = require('child_process')
+const chalk = require('chalk')
 
 const pkg = JSON.stringify(path.join(__dirname, '..', '..', 'index.js'))
 
@@ -21,7 +22,7 @@ async function spawner (t, func, expected, expectedMore = {}) {
 }
 
 async function executeTap (t, script, expected, expectedMore = {}) {
-  print('script', script)
+  print('script', 'yellow', script)
   const { exitCode, error, stdout, stderr } = await executeCode(script)
 
   if (expectedMore.exitCode !== undefined) {
@@ -40,9 +41,9 @@ async function executeTap (t, script, expected, expectedMore = {}) {
   const tapexp = standardizeTap(expected)
   t.is(tapout, tapexp, 'TAP output matches the expected output')
 
-  // print('stdout', stdout)
-  print('tapout', tapout)
-  print('tapexp', tapexp)
+  print('stdout', 'green', stdout)
+  print('tapout', 'magenta', tapout)
+  print('tapexp', 'cyan', tapexp)
 
   return { exitCode, stdout, tapout, tapexp, stderr }
 }
@@ -92,8 +93,8 @@ function functionToString (func, opts = {}) {
   return func.trim()
 }
 
-function print (name, str) {
-  console.log('[' + name + ']')
+function print (name, color, str) {
+  console.log(chalk[color]('[' + name + ']'))
   console.log(str)
-  console.log('[/' + name + ']')
+  console.log(chalk[color]('[/' + name + ']'))
 }
