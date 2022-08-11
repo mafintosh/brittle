@@ -113,20 +113,9 @@ function cleanStd (std) {
   return std.join('')
 }
 
-function functionToString (func, opts = {}) {
-  func = func.toString()
-
-  if (!opts.raw) {
-    // very naively done but works for now
-    if (func.indexOf('function () {') === 0) func = func.replace('function () {', '')
-    else if (func.indexOf('() => {') === 0) func = func.replace('() => {', '')
-    else throw new Error('Function for spawning not valid')
-
-    func = func.slice(0, -1) // removes "}" from the end
-  }
-
-  // + there are some remaining spaces
-  return func.trim()
+function functionToString (func) {
+  // + there are still some remaining spaces
+  return func.toString().trim()
 }
 
 function print (name, color, str) {
