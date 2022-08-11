@@ -14,9 +14,9 @@ async function tester (t, name, func, expected, expectedMore = {}) {
 }
 
 async function spawner (t, func, expected, expectedMore = {}) {
-  func = functionToString(func)
+  func = functionToString(func, { raw: true })
 
-  const script = `const test = require(${pkg})\n\n${func}`
+  const script = `const test = require(${pkg})\n\n;(${func})()`
   return executeTap(t, script, expected, expectedMore)
 }
 
