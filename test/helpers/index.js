@@ -62,17 +62,30 @@ function executeCode (script) {
   return new Promise((resolve, reject) => {
     const args = ['-e', script]
     const opts = { timeout: 30000 }
-    const child = child_process.execFile(process.execPath, args, opts, callback)
+    const child = child_process.spawn(process.execPath, args, opts)
 
-    let exitCode // + should listen to 'close' or 'exit'? (note: 'close' is called after callback)
+    let exitCode
+    const stdout = []
+    const stderr = []
+
     child.on('exit', function (code) {
       exitCode = code
     })
 
-    function callback (error, stdout, stderr) {
-      if (error) resolve({ exitCode, error })
-      else resolve({ exitCode, stdout, stderr })
-    }
+    child.on('close', function (code) {
+      resolve({ exitCode, stdout: cleanStd(stdout), stderr: cleanStd(stderr) })
+    })
+
+    child.on('error', function (error) {
+      resolve({ exitCode, error, stdout: cleanStd(stdout), stderr: cleanStd(stderr) })
+    })
+
+    child.stdout.setEncoding('utf-8')
+    child.stderr.setEncoding('utf-8')
+    child.stdout.on('data', (chunk) => stdout.push(chunk))
+    child.stderr.on('data', (chunk) => stderr.push(chunk))
+    child.stdout.on('end', (chunk) => stdout.push(chunk))
+    child.stderr.on('end', (chunk) => stderr.push(chunk))
   })
 }
 
@@ -85,6 +98,13 @@ function standardizeTap (stdout) {
     .map(n => n.trim())
     .filter(n => n)
     .join('\n')
+}
+
+function cleanStd (std) {
+  if (!std.length || std[0] === undefined) {
+    return ''
+  }
+  return std.join('')
 }
 
 function functionToString (func, opts = {}) {
