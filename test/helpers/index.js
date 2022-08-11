@@ -54,12 +54,12 @@ async function executeTap (script, expected, expectedMore = {}) {
 
     for (let i = 0; i < errors.length; i++) {
       const err = errors[i]
-      console.error(chalk.white.bgRed.bold('Error:'))
+      console.error(chalk.white.bgRed.bold('Error:'), err.error.message, '↓')
       if (err.hasOwnProperty('actual') || err.hasOwnProperty('expected')) {
         console.error(chalk.red('[actual]'), err.actual)
         console.error(chalk.red('[expected]'), err.expected)
       }
-      console.error(chalk.red('[stack]'), err.error.stack)
+      // console.error(chalk.red('[stack]'), err.error.stack)
     }
   }
 
